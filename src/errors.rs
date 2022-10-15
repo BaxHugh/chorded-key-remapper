@@ -26,4 +26,7 @@ pub enum DeviceError {
 
     #[error("{0}")]
     SupportedKeysEmpty(String),
+
+    #[error("Device {0} not found")]
+    DeviceNotFound(String),
 }
