@@ -5,6 +5,16 @@ use std::{io, path::PathBuf};
 pub trait DeviceWrapper {
     fn supported_keys(&self) -> Result<Box<dyn Iterator<Item = Key> + '_>, DeviceError>;
     fn name(&self) -> Option<&str>;
+
+    fn to_string(&self) -> String {
+        return format!(
+            "{}",
+            match self.name() {
+                None => "UNNAMED",
+                Some(name) => name,
+            }
+        );
+    }
 }
 
 pub trait VirtualDeviceWrapper {

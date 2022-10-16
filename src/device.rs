@@ -26,10 +26,22 @@ pub fn create_virtual_device(
     return Ok(device);
 }
 
-pub fn get_device_from_name(name: &str) -> Result<impl DeviceWrapper, DeviceError> {
-    let mut dev_count = 0;
+pub fn get_all_keyboards() -> (Vec<impl DeviceWrapper>, i32) {
+    let mut found_device_count = 0;
+    let mut keyboards = Vec::<Device>::new();
     for (_, device) in evdev::enumerate() {
-        dev_count += 1;
+        found_device_count += 1;
+        if is_keyboard(&device) {
+            keyboards.push(device);
+        }
+    }
+    return (keyboards, found_device_count);
+}
+
+pub fn get_device_from_name(name: &str) -> Result<impl DeviceWrapper, DeviceError> {
+    let mut found_device_count = 0;
+    for (_, device) in evdev::enumerate() {
+        found_device_count += 1;
         match device.name() {
             None => continue,
             Some(dev_name) => {
@@ -40,12 +52,18 @@ pub fn get_device_from_name(name: &str) -> Result<impl DeviceWrapper, DeviceErro
         }
     }
     return Err(DeviceError::DeviceNotFound(format!(
-        "Unble to find device with name '{name}'. Searched {dev_count} devices. \
+        "Unble to find device with name '{name}'. Searched {found_device_count} devices. \
         Make sure the program is running with sudo privileges."
     )));
 }
 
 pub fn get_device_from_path(path: impl AsRef<Path>) -> Result<impl DeviceWrapper, DeviceError> {
-    let mut device = Device::open(path)?;
+    let device = Device::open(path)?;
     return Ok(device);
+}
+
+fn is_keyboard(device: &impl DeviceWrapper) -> bool {
+    return device
+        .supported_keys()
+        .map_or(false, |mut keys| keys.any(|key| key == Key::KEY_ENTER));
 }

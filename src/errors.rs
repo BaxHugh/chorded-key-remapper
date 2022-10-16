@@ -8,6 +8,9 @@ pub enum Error {
 
     #[error(transparent)]
     VirtualDeviceCreationError(#[from] VirtualDeviceCreationError),
+
+    #[error(transparent)]
+    DeviceError(#[from] DeviceError),
 }
 
 #[derive(Debug, Error)]
@@ -29,4 +32,7 @@ pub enum DeviceError {
 
     #[error("Device {0} not found")]
     DeviceNotFound(String),
+
+    #[error("No devices found{0}")]
+    DevicesNotFound(&'static str),
 }
