@@ -1,0 +1,23 @@
+[devices]
+include = ["Your Keyboard"]  # Leave empty to use all keyboards by default
+omit = ["Your Keyboard"]  # Leave empty to use all keyboards by default
+
+[position.left_hand]
+little = "KEY_A"
+ring = "KEY_W"
+middle = "KEY_E"
+index = "KEY_F"
+thumb = "KEY_SPACE"
+
+[position.right_hand]
+thumb = "KEY_RIGHT_ALT"
+index = "KEY_K"
+middle = "KEY_O"
+ring = "KEY_P"
+little = "KEY_APOSTROPHE"
+
+[mappings]
+maps = [
+    {input = ["KEY_D", "KEY_F"], output = ["KEY_UP"]},
+    {input = ["KEY_S", "KEY_D"], output = ["KEY_UP"]},
+]
