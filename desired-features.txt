@@ -1,0 +1,6 @@
+- Map any sequence of keys to any other sequence of keys (including single key sequences)
+- Support key press+release sequences as outputs, .i.e for typing words with chords
+- Support limited key press sequences as inputs, i.e. double press a key as an input for a key map
+
+Maybe nice-to-haves:
+	Specify order that keys are pressed and released in an ordinary map? Will use first in last out by default
