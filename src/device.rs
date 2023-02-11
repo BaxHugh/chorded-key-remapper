@@ -21,6 +21,19 @@ pub trait VirtualDeviceInfo {
     ) -> Result<Box<dyn Iterator<Item = io::Result<PathBuf>>>, DeviceError>;
 }
 
+impl Key {
+    #[inline]
+    pub const fn new(key: evdev::Key) -> Self {
+        Self(key)
+    }
+}
+
+impl ToString for Key {
+    fn to_string(&self) -> String {
+        format!("{:?}", self.0)
+    }
+}
+
 impl Device {
     #[inline]
     pub const fn new(device: evdev::Device) -> Self {

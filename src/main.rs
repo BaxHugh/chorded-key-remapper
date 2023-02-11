@@ -1,9 +1,13 @@
+use std::path::Path;
+
 use errors::Error;
 
 use crate::device::{device_getting::get_all_keyboards, DeviceInfo, VirtualDevice};
 
+mod config;
 mod device;
 mod errors;
+mod schema;
 
 fn print_devices(devices: &Vec<impl DeviceInfo>) {
     for device in devices {
