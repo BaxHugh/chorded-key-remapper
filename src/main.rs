@@ -1,21 +1,17 @@
 use errors::Error;
 
-use crate::{
-    device::{create_virtual_device, get_all_keyboards, get_device_from_name},
-    device_library_interface::DeviceWrapper,
-};
+use crate::device::{device_getting::get_all_keyboards, DeviceInfo, VirtualDevice};
 
 mod device;
-mod device_library_interface;
 mod errors;
 
-fn print_devices(devices: &Vec<impl DeviceWrapper>) {
+fn print_devices(devices: &Vec<impl DeviceInfo>) {
     for device in devices {
         println!("'{}'", device.to_string());
     }
 }
 
-fn filter_out_virtual_devices(devices: Vec<impl DeviceWrapper>) -> Vec<impl DeviceWrapper> {
+fn filter_out_virtual_devices<T: DeviceInfo>(devices: Vec<T>) -> Vec<T> {
     return devices
         .into_iter()
         .filter(|device| !device.to_string().to_lowercase().contains("virtual"))
@@ -30,11 +26,11 @@ fn main() -> Result<(), Error> {
             "No devices found, Make sure the program is running with sudo privileges.",
         )));
     }
-    let keyboards = filter_out_virtual_devices(keyboards);
+    let mut keyboards = filter_out_virtual_devices(keyboards);
     println!("Found Keyboards:");
     print_devices(&keyboards);
 
-    let chosen_keyboard = &keyboards[0];
+    let mut chosen_keyboard = keyboards.remove(0);
 
     println!();
     println!(
@@ -43,7 +39,8 @@ fn main() -> Result<(), Error> {
     );
     println!();
     let virtual_keyboard_name = "My Virtual Keyboard";
-    let virtual_device = create_virtual_device(virtual_keyboard_name, chosen_keyboard);
+    let virtual_device =
+        VirtualDevice::from_template_device(virtual_keyboard_name, &mut chosen_keyboard)?;
     println!("Virtual keyboard {virtual_keyboard_name}");
     println!();
 
