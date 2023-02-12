@@ -4,7 +4,7 @@ use serde_derive::Deserialize;
 #[derive(Deserialize, Debug)]
 pub struct Config {
     #[serde(default)]
-    pub devices: Option<DevicesConfig>,
+    pub devices: DevicesConfig,
     #[serde(default)]
     pub mappings: Option<MappingsConfig>,
 }

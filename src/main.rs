@@ -2,7 +2,7 @@ use std::path::Path;
 
 use errors::Error;
 
-use crate::device::{device_getting::get_all_keyboards, DeviceInfo, VirtualDevice};
+use crate::device::{DeviceInfo, VirtualDevice};
 
 mod config;
 mod device;
@@ -15,44 +15,22 @@ fn print_devices(devices: &Vec<impl DeviceInfo>) {
     }
 }
 
-fn filter_out_virtual_devices<T: DeviceInfo>(devices: Vec<T>) -> Vec<T> {
-    return devices
-        .into_iter()
-        .filter(|device| !device.to_string().to_lowercase().contains("virtual"))
-        .collect();
-}
-
 fn main() -> Result<(), Error> {
     let config = config::parsing::read_config_file(Path::new("config.toml"))?;
-    println!("{:?}", config);
+    let keyboards = config.devices.extract_devices_to_remap()?;
 
-    println!("Hello keyboard!");
-    let (keyboards, num_of_devices_found) = get_all_keyboards();
-    if num_of_devices_found == 0 {
-        return Err(Error::from(errors::DeviceError::DevicesNotFound(
-            "No devices found, Make sure the program is running with sudo privileges.",
-        )));
-    }
-    let mut keyboards = filter_out_virtual_devices(keyboards);
-    println!("Found Keyboards:");
+    println!("Selected devices:");
     print_devices(&keyboards);
 
-    let mut chosen_keyboard = keyboards.remove(0);
+    // println!();
+    // let virtual_keyboard_name = "My Virtual Keyboard";
+    // let virtual_device =
+    //     VirtualDevice::from_template_device(virtual_keyboard_name, &mut chosen_keyboard)?;
+    // println!("Virtual keyboard {virtual_keyboard_name}");
+    // println!();
 
-    println!();
-    println!(
-        "Real keyboard being used: '{}'",
-        chosen_keyboard.to_string()
-    );
-    println!();
-    let virtual_keyboard_name = "My Virtual Keyboard";
-    let virtual_device =
-        VirtualDevice::from_template_device(virtual_keyboard_name, &mut chosen_keyboard)?;
-    println!("Virtual keyboard {virtual_keyboard_name}");
-    println!();
-
-    let (keyboards, _) = get_all_keyboards();
-    println!("New keyboards found:");
-    print_devices(&keyboards);
+    // let (keyboards, _) = get_all_keyboards();
+    // println!("New keyboards found:");
+    // print_devices(&keyboards);
     return Ok(());
 }

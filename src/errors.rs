@@ -47,7 +47,7 @@ pub enum DeviceError {
     DeviceNotFound(String),
 
     #[error("No devices found{0}")]
-    DevicesNotFound(&'static str),
+    DevicesNotFound(String),
 }
 
 #[derive(Debug, Error)]
