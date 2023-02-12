@@ -1,10 +1,8 @@
+use super::key::Key;
 use crate::errors::{DeviceError, VirtualDeviceCreationError};
 use std::{io, path::PathBuf};
-
 // Structs which wrap structs provided by another device interface library, currently evdev, but
 // this library could be changed if compiling for a different OS, or if another library is later preferred.
-
-pub struct Key(evdev::Key);
 
 pub struct Device(evdev::Device);
 
@@ -19,19 +17,6 @@ pub trait VirtualDeviceInfo {
     fn enumerate_dev_nodes(
         &mut self,
     ) -> Result<Box<dyn Iterator<Item = io::Result<PathBuf>>>, DeviceError>;
-}
-
-impl Key {
-    #[inline]
-    pub const fn new(key: evdev::Key) -> Self {
-        Self(key)
-    }
-}
-
-impl ToString for Key {
-    fn to_string(&self) -> String {
-        format!("{:?}", self.0)
-    }
 }
 
 impl Device {
@@ -113,7 +98,7 @@ impl VirtualDeviceInfo for VirtualDevice {
 }
 
 pub mod device_getting {
-    use crate::device::{Device, DeviceInfo};
+    use super::{Device, DeviceInfo};
     use crate::errors::DeviceError;
     use std::path::{Path, PathBuf};
 
