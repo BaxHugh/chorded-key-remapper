@@ -23,8 +23,9 @@ fn filter_out_virtual_devices<T: DeviceInfo>(devices: Vec<T>) -> Vec<T> {
 }
 
 fn main() -> Result<(), Error> {
-    let config = config::parsing::read_config_file(Path::new("config.toml"));
+    let config = config::parsing::read_config_file(Path::new("config.toml"))?;
     println!("{:?}", config);
+
     println!("Hello keyboard!");
     let (keyboards, num_of_devices_found) = get_all_keyboards();
     if num_of_devices_found == 0 {

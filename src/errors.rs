@@ -64,6 +64,12 @@ pub enum ConfigError {
     #[error("{0}")]
     ReadError(String),
 
-    #[error(transparent)]
-    DeserializeError(#[from] toml::de::Error),
+    #[error("{0}")]
+    DeserializeError(String),
+}
+
+impl From<toml::de::Error> for ConfigError {
+    fn from(value: toml::de::Error) -> Self {
+        ConfigError::DeserializeError(value.message().to_owned())
+    }
 }
