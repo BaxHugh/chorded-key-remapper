@@ -1,6 +1,6 @@
 [devices]
 include = ["Your Keyboard"]  # Leave empty to use all keyboards by default
-# omit = ["Your Keyboard"]  # Keyboards which should be left alone.
+exclude = ["Your Keyboard"]  # Keyboards which should be left alone.
 
 
 [mappings]
