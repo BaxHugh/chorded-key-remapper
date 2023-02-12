@@ -1,19 +1,42 @@
 use crate::mapping::Map;
 use serde_derive::Deserialize;
 
+fn empty<T>() -> Option<T> {
+    None
+}
+
 #[derive(Deserialize, Debug)]
-pub struct Devices {
-    include: Vec<String>,
-    omit: Vec<String>,
+pub struct DevicesConfig {
+    #[serde(default = "empty")]
+    include: Option<Vec<String>>,
+    #[serde(default = "empty")]
+    omit: Option<Vec<String>>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
-    devices: Devices,
-    mappings: Mappings,
+    #[serde(default)]
+    devices: Option<DevicesConfig>,
+    #[serde(default)]
+    mappings: Option<MappingsConfig>,
 }
 
 #[derive(Deserialize, Debug)]
-pub struct Mappings {
-    maps: Vec<Map>,
+pub struct MappingsConfig {
+    maps: Option<Vec<Map>>,
+}
+
+impl Default for DevicesConfig {
+    fn default() -> Self {
+        Self {
+            include: None,
+            omit: None,
+        }
+    }
+}
+
+impl Default for MappingsConfig {
+    fn default() -> Self {
+        Self { maps: None }
+    }
 }

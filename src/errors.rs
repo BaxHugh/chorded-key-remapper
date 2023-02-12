@@ -4,6 +4,9 @@ use toml;
 /// Main error type of the program, transparently handles all other error types.
 #[derive(Debug, Error)]
 pub enum Error {
+    #[error("{0}")]
+    Message(String),
+
     #[error(transparent)]
     IO(#[from] std::io::Error),
 
@@ -19,6 +22,9 @@ pub enum Error {
 
 #[derive(Debug, Error)]
 pub enum VirtualDeviceCreationError {
+    #[error("{0}")]
+    Message(String),
+
     #[error(transparent)]
     IO(#[from] std::io::Error),
 
@@ -28,6 +34,9 @@ pub enum VirtualDeviceCreationError {
 
 #[derive(Debug, Error)]
 pub enum DeviceError {
+    #[error("{0}")]
+    Message(String),
+
     #[error(transparent)]
     IO(#[from] std::io::Error),
 
@@ -43,6 +52,9 @@ pub enum DeviceError {
 
 #[derive(Debug, Error)]
 pub enum ConfigError {
+    #[error("{0}")]
+    Message(String),
+
     #[error(transparent)]
     IO(#[from] std::io::Error),
 
