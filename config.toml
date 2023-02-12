@@ -1,10 +1,10 @@
 [devices]
 include = ["Your Keyboard"]  # Leave empty to use all keyboards by default
-omit = ["Your Keyboard"]  # Keyboards which should be left alone.
+# omit = ["Your Keyboard"]  # Keyboards which should be left alone.
 
 
 [mappings]
 maps = [
-    {input = ["KEY_D", "KEY_F"], output = ["KEY_UP"]},
+    {input = ["KEY_D", "KEY_F"], output = ["KEY_UP", "KEY_NOT_A_KEY"]},
     {input = ["KEY_S", "KEY_D"], output = ["KEY_UP"]},
 ]
