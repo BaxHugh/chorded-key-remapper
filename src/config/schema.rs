@@ -4,22 +4,22 @@ use serde_derive::Deserialize;
 #[derive(Deserialize, Debug)]
 pub struct Config {
     #[serde(default)]
-    devices: Option<DevicesConfig>,
+    pub devices: Option<DevicesConfig>,
     #[serde(default)]
-    mappings: Option<MappingsConfig>,
+    pub mappings: Option<MappingsConfig>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct DevicesConfig {
     #[serde(default = "empty")]
-    include: Option<Vec<String>>,
+    pub include: Option<Vec<String>>,
     #[serde(default = "empty")]
-    exclude: Option<Vec<String>>,
+    pub exclude: Option<Vec<String>>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct MappingsConfig {
-    maps: Option<Vec<Map>>,
+    pub maps: Option<Vec<Map>>,
 }
 
 impl Default for DevicesConfig {

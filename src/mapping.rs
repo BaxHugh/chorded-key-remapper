@@ -3,6 +3,6 @@ use serde_derive::Deserialize;
 
 #[derive(Deserialize, Debug)]
 pub struct Map {
-    input: Vec<Key>,
-    output: Vec<Key>,
+    pub input: Vec<Key>,
+    pub output: Vec<Key>,
 }
