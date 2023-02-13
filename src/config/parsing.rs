@@ -61,10 +61,38 @@ fn filter_by_names<T: DeviceInfo>(
     names: Vec<String>,
 ) -> Result<Vec<T>, DeviceError> {
     match dg::extract_named_devices(devices, &names) {
-        Some(devices) => Ok(devices),
+        Some(devices) => {
+            if devices.len() != names.len() {
+                let found: Vec<&str> = devices
+                    .iter()
+                    .map(|dev| match dev.name() {
+                        Some(name) => name,
+                        None => "UNNAMED",
+                    })
+                    .collect();
+                let missing: Vec<&str> = names
+                    .iter()
+                    .filter(|name| !found.contains(&name.as_str()))
+                    .map(|name| name.as_str())
+                    .collect();
+                log::info!(
+                    "Not all named devices where found. Couldn't find: {}",
+                    missing
+                        .into_iter()
+                        .map(|n| format!("'{n}'"))
+                        .collect::<Vec<String>>()
+                        .join(", ")
+                )
+            }
+            Ok(devices)
+        }
         None => Err(DeviceError::DevicesNotFound(format!(
-            "No devices found which match names: {:?}",
+            "No devices found which match names: {}",
             names
+                .into_iter()
+                .map(|n| format!("'{n}'"))
+                .collect::<Vec<String>>()
+                .join(", ")
         ))),
     }
 }
