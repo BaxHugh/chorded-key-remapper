@@ -106,10 +106,14 @@ fn enumerate_devices() -> Box<dyn Iterator<Item = (PathBuf, Device)>> {
     )
 }
 
-pub fn get_all_devices() -> Option<Vec<Device>> {
-    let devices: Vec<Device> = enumerate_devices().map(|(_, device)| device).collect();
+pub fn get_all_devices() -> Result<Vec<Device>, DeviceError> {
+    let devices = enumerate_devices()
+        .map(|(_, device)| device)
+        .collect::<Vec<Device>>();
     match devices.len() {
-        0 => None,
-        _ => Some(devices),
+        0 => Err(DeviceError::DevicesNotFound(format!(
+            "No devices found, make sure the program is running under sudo privileges."
+        ))),
+        _ => Ok(devices),
     }
 }

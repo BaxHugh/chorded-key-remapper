@@ -1,7 +1,7 @@
 use super::schema::{Config, DevicesConfig};
 use crate::auxiliary::device_filtering::FilterableDevices;
 use crate::auxiliary::utils::format_strings;
-use crate::device::{self, Device, DeviceInfo};
+use crate::device::DeviceInfo;
 use crate::errors::ConfigError;
 use crate::errors::DeviceError;
 
@@ -22,19 +22,11 @@ pub fn read_config_file(path: &Path) -> Result<Config, ConfigError> {
     Ok(config)
 }
 
-fn get_all_devices() -> Result<Vec<Device>, DeviceError> {
-    match device::get_all_devices() {
-        Some(devices) => Ok(devices),
-        None => Err(DeviceError::DevicesNotFound(format!(
-            "No devices found, make sure the program is running under sudo privileges."
-        ))),
-    }
-}
-
 impl DevicesConfig {
-    pub fn extract_devices_to_remap(self) -> Result<Vec<Device>, DeviceError> {
-        let all_devices = get_all_devices()?;
-
+    pub fn extract_devices_to_remap<T: DeviceInfo>(
+        self,
+        all_devices: Vec<T>,
+    ) -> Result<Vec<T>, DeviceError> {
         let keyboards = match self.include {
             None => match all_devices.extract_devices_whose_name_doesnt_contain("virtual") {
                 None => Err(DeviceError::DevicesNotFound(format!(

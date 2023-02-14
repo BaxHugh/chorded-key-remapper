@@ -2,7 +2,7 @@ use std::path::Path;
 
 use errors::Error;
 
-use crate::device::{DeviceInfo, VirtualDevice};
+use crate::device::{get_all_devices, DeviceInfo, VirtualDevice};
 
 mod auxiliary;
 mod config;
@@ -23,7 +23,9 @@ fn main() -> Result<(), Error> {
     env_logger::init();
 
     let config = config::parsing::read_config_file(Path::new("config.toml"))?;
-    let keyboards = config.devices.extract_devices_to_remap()?;
+    let keyboards = config
+        .devices
+        .extract_devices_to_remap(get_all_devices()?)?;
 
     println!("Selected devices:");
     print_devices(&keyboards);
