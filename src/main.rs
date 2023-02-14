@@ -15,7 +15,12 @@ fn print_devices(devices: &Vec<impl DeviceInfo>) {
     }
 }
 
+extern crate env_logger;
+extern crate log;
+
 fn main() -> Result<(), Error> {
+    env_logger::init();
+
     let config = config::parsing::read_config_file(Path::new("config.toml"))?;
     let keyboards = config.devices.extract_devices_to_remap()?;
 
