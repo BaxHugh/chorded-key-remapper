@@ -98,88 +98,18 @@ impl VirtualDeviceInfo for VirtualDevice {
     }
 }
 
-pub mod device_getting {
-    use super::{Device, DeviceInfo};
-    use crate::{device, errors::DeviceError};
-    use std::{
-        path::{Path, PathBuf},
-        str::FromStr,
-    };
-
-    fn enumerate_devices() -> Box<dyn Iterator<Item = (PathBuf, Device)>> {
-        Box::new(
-            evdev::enumerate()
-                .into_iter()
-                .map(|(path, device)| (path, Device::new(device))),
-        )
-    }
-
-    pub fn get_all_devices() -> Option<Vec<Device>> {
-        let devices: Vec<Device> = enumerate_devices().map(|(_, device)| device).collect();
-        match devices.len() {
-            0 => None,
-            _ => Some(devices),
-        }
-    }
-
-    pub fn filter_keyboards<T: DeviceInfo>(devices: Vec<T>) -> Option<Vec<T>> {
-        // TODO: Work out how to write this properly, I tried a bit with iter_mut but didn't get far.
-        let devices: Vec<T> = devices
+fn enumerate_devices() -> Box<dyn Iterator<Item = (PathBuf, Device)>> {
+    Box::new(
+        evdev::enumerate()
             .into_iter()
-            .filter(|device| is_keyboard(device))
-            .collect();
-        match devices.len() {
-            0 => None,
-            _ => Some(devices),
-        }
-    }
+            .map(|(path, device)| (path, Device::new(device))),
+    )
+}
 
-    pub fn extract_named_device<T: DeviceInfo>(
-        devices: Vec<T>,
-        name: &str,
-    ) -> Result<T, DeviceError> {
-        let mut devices: Vec<T> = devices
-            .into_iter()
-            .filter(|device| device.name() == Some(name))
-            .collect();
-        match devices.len() {
-            0 => Err(DeviceError::DeviceNotFound(format!(
-                "could not find device: {name}"
-            ))),
-            1 => Ok(devices.remove(0)),
-            _ => {
-                log::warn!("Multiple devices found with name: {name}, using the first result.");
-                Ok(devices.remove(0))
-            }
-        }
-    }
-
-    pub fn extract_named_devices<T: DeviceInfo>(
-        devices: Vec<T>,
-        names: &Vec<String>,
-    ) -> Option<Vec<T>> {
-        let devices: Vec<T> = devices
-            .into_iter()
-            .filter(|device| match device.name() {
-                None => false,
-                Some(s) => names.contains(&String::from(s)),
-            })
-            .collect();
-        match devices.len() {
-            0 => None,
-            _ => Some(devices),
-        }
-    }
-
-    pub fn get_device_from_path(path: impl AsRef<Path>) -> Result<Device, DeviceError> {
-        let device = evdev::Device::open(path)?;
-        return Ok(Device::new(device));
-    }
-
-    fn is_keyboard<T: DeviceInfo>(device: &T) -> bool {
-        return device.supported_keys().map_or(false, |mut keys| {
-            // TODO: Currently just patched this with call to evdev, but need to wrap key types in this project's Key struct
-            keys.any(|key| key.0 == evdev::Key::KEY_ENTER)
-        });
+pub fn get_all_devices() -> Option<Vec<Device>> {
+    let devices: Vec<Device> = enumerate_devices().map(|(_, device)| device).collect();
+    match devices.len() {
+        0 => None,
+        _ => Some(devices),
     }
 }

@@ -4,6 +4,7 @@ use errors::Error;
 
 use crate::device::{DeviceInfo, VirtualDevice};
 
+mod auxiliary;
 mod config;
 mod device;
 mod errors;
