@@ -1,5 +1,6 @@
 [devices]
-include = ["AT Translated Set 2 keyboard"]  # Keyboards which should be left alone.
+include = ["AT Translated Set 2 keyboard", "Imaginary Keyboard"]  # Keyboards which should be left alone.
+# include = ["AT Translated Set keyboard", "Imaginary Keyboard"]  # Keyboards which should be left alone.
 # include = ["Your Keyboard"]  # Leave empty to use all keyboards by default
 exclude = ["Your Keyboard"]  # Keyboards which should be left alone.
 # exclude = ["AT Translated Set 2 keyboard"]  # Keyboards which should be left alone.

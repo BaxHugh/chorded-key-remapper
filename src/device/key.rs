@@ -10,7 +10,7 @@ impl Key {
     }
 
     #[inline]
-    pub const fn code(self) -> u16 {
+    pub const fn code(&self) -> u16 {
         self.0.code()
     }
 }
