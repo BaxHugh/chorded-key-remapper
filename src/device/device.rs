@@ -5,9 +5,9 @@ use std::{io, path::PathBuf};
 // Structs which wrap structs provided by another device interface library, currently evdev, but
 // this library could be changed if compiling for a different OS, or if another library is later preferred.
 
-pub struct Device(evdev::Device);
+pub struct Device(pub evdev::Device);
 
-pub struct VirtualDevice(evdev::uinput::VirtualDevice);
+pub struct VirtualDevice(pub evdev::uinput::VirtualDevice);
 
 pub trait DeviceInfo: ToString {
     fn supported_keys(&self) -> Result<Box<dyn Iterator<Item = Key> + '_>, DeviceError>;
