@@ -1,4 +1,4 @@
-use crate::mapping::Map;
+use crate::mapping;
 use serde_derive::Deserialize;
 
 #[derive(Deserialize, Debug)]
@@ -19,7 +19,7 @@ pub struct DevicesConfig {
 
 #[derive(Deserialize, Debug)]
 pub struct MappingsConfig {
-    pub maps: Option<Vec<Map>>,
+    pub hyper_maps: Option<Vec<mapping::HyperkeyGroupMap>>,
 }
 
 impl Default for DevicesConfig {
@@ -33,7 +33,7 @@ impl Default for DevicesConfig {
 
 impl Default for MappingsConfig {
     fn default() -> Self {
-        Self { maps: None }
+        Self { hyper_maps: None }
     }
 }
 

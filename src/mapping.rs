@@ -2,7 +2,14 @@ use crate::device::Key;
 use serde_derive::Deserialize;
 
 #[derive(Deserialize, Debug)]
-pub struct Map {
-    pub input: Vec<Key>,
-    pub output: Vec<Key>,
+
+pub struct HyperkeyGroupMap {
+    pub hyper: Key,
+    pub maps: Vec<OneToOneMap>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct OneToOneMap {
+    pub input: Key,
+    pub output: Key,
 }

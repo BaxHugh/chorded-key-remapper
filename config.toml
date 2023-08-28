@@ -1,12 +1,16 @@
 [devices]
-include = ["AT Translated Set 2 keyboard"]  # Keyboards which should be left alone.
+include = [
+    "AT Translated Set 2 keyboard",
+] # Keyboards which should be left alone.
 # include = ["Your Keyboard"]  # Leave empty to use all keyboards by default
-exclude = ["Your Keyboard"]  # Keyboards which should be left alone.
+exclude = ["Your Keyboard"] # Keyboards which should be left alone.
 # exclude = ["AT Translated Set 2 keyboard"]  # Keyboards which should be left alone.
 
 
 [mappings]
+[[hyper_maps]]
+hyper = "KEY_S"
 maps = [
-    # {input = ["KEY_D", "KEY_F"], output = ["KEY_UP", "KEY_NOT_A_KEY"]},
-    {input = ["KEY_S", "KEY_D"], output = ["KEY_UP"]},
+    { input = "KEY_D", output = "KEY_UP" },
+    { input = "KEY_F", output = "KEY_DOWN" },
 ]
