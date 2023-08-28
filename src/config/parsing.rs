@@ -1,6 +1,5 @@
 use super::schema::{Config, DevicesConfig};
 use crate::auxiliary::device_filtering::FilterableDevices;
-use crate::auxiliary::utils::format_strings;
 use crate::device::DeviceInfo;
 use crate::errors::ConfigError;
 use crate::errors::DeviceError;
@@ -44,7 +43,7 @@ impl DevicesConfig {
             Some(include_names) => match all_devices.extract_named_devices(&include_names) {
                 None => Err(DeviceError::DevicesNotFound(format!(
                     "No devices found which match names: {}",
-                    format_strings(include_names)
+                    include_names.join(", ")
                 ))),
 
                 Some(devices) => Ok(devices),
@@ -74,7 +73,7 @@ impl DevicesConfig {
 
                             log::info!(
                                 "Not all named devices where found. Couldn't find: {}",
-                                format_strings(missing)
+                                missing.join(", ")
                             );
                         }
                     }
@@ -83,7 +82,7 @@ impl DevicesConfig {
 
                 None => Err(DeviceError::DevicesNotFound(format!(
                     "No devices left after filtering out excluded devices: {}",
-                    format_strings(exclude_names)
+                    exclude_names.join(", ")
                 ))),
             },
         }
