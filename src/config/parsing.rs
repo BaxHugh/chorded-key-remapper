@@ -27,6 +27,7 @@ impl DevicesConfig {
         all_devices: Vec<T>,
     ) -> Result<Vec<T>, DeviceError> {
         let keyboards = match self.include {
+            // Automatically select all non-virtual keyboards if no specific devices are specified in the config.
             None => match all_devices.extract_devices_whose_name_doesnt_contain("virtual") {
                 None => Err(DeviceError::DevicesNotFound(format!(
                     "No non-virtual devices fond in existing devices."
@@ -40,24 +41,17 @@ impl DevicesConfig {
                 },
             },
 
+            // If specific devices are specified in the config, select those.
             Some(include_names) => match all_devices.extract_named_devices(&include_names) {
                 None => Err(DeviceError::DevicesNotFound(format!(
                     "No devices found which match names: {}",
-                    include_names.join(", ")
+                    format_many_device_names(&include_names)
                 ))),
 
-                Some(devices) => Ok(devices),
-            },
-        }?;
-
-        match self.exclude {
-            None => Ok(keyboards),
-
-            Some(exclude_names) => match keyboards.remove_named_devices(&exclude_names) {
-                Some(keyboards) => {
+                Some(devices) => {
                     if log_enabled!(log::Level::Info) {
-                        if keyboards.len() != exclude_names.len() {
-                            let found: Vec<&str> = keyboards
+                        if devices.len() != include_names.len() {
+                            let found: Vec<&str> = devices
                                 .iter()
                                 .map(|dev| match dev.name() {
                                     Some(name) => name,
@@ -65,7 +59,7 @@ impl DevicesConfig {
                                 })
                                 .collect();
 
-                            let missing: Vec<String> = exclude_names
+                            let missing: Vec<String> = include_names
                                 .iter()
                                 .filter(|name| !found.contains(&name.as_str()))
                                 .map(|name| name.to_owned())
@@ -73,26 +67,42 @@ impl DevicesConfig {
 
                             log::info!(
                                 "Not all named devices where found. Couldn't find: {}",
-                                missing.join(", ")
+                                format_many_device_names(&missing)
                             );
                         }
                     }
-                    Ok(keyboards)
+                    Ok(devices)
                 }
+            },
+        }?;
+
+        match self.exclude {
+            None => Ok(keyboards),
+            Some(exclude_names) => match keyboards.remove_named_devices(&exclude_names) {
+                Some(keyboards) => Ok(keyboards),
 
                 None => Err(DeviceError::DevicesNotFound(format!(
                     "No devices left after filtering out excluded devices: {}",
-                    exclude_names.join(", ")
+                    format_many_device_names(&exclude_names)
                 ))),
             },
         }
     }
 }
 
+fn format_many_device_names(names: &Vec<String>) -> String {
+    names
+        .iter()
+        .map(|name| format!("'{}'", name))
+        .collect::<Vec<String>>()
+        .join(", ")
+}
+
 #[cfg(test)]
 mod test_DevicesConfig_extract_devices_to_remap {
     use super::*;
     use crate::device::Key;
+    extern crate testing_logger;
 
     #[derive(Clone, Eq, PartialEq, Debug)]
     struct MockDevice {
@@ -301,16 +311,30 @@ mod test_DevicesConfig_extract_devices_to_remap {
     }
 
     #[test]
-    fn test_no_error_when_not_all_include_devices_are_present() {
+    fn test_no_error_and_info_logged_when_not_all_include_devices_are_present() {
+        testing_logger::setup();
+
         let result = DevicesConfig {
             include: Some(vec![
                 "real keyboard 1".to_owned(),
                 "not present keyboard".to_owned(),
+                "not present keyboard 2".to_owned(),
             ]),
             exclude: None,
         }
         .extract_devices_to_remap(vec![Keyboard::new("real keyboard 1")]);
         assert!(result.is_ok());
+        testing_logger::validate(|captured_logs| {
+            assert_eq!(
+                captured_logs.len(),
+                1,
+                "Expected 1 log message but got {}.",
+                captured_logs.len()
+            );
+            assert!(captured_logs[0].body.contains(
+                "Not all named devices where found. Couldn't find: 'not present keyboard', 'not present keyboard 2'"
+            ));
+        })
     }
     #[test]
     fn test_no_error_when_not_all_exclude_devices_are_present() {
