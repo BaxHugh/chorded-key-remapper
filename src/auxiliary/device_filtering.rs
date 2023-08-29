@@ -1,4 +1,4 @@
-use crate::device::DeviceInfo;
+use crate::device::{DeviceInfo, Key};
 
 pub trait FilterableDevices<T> {
     fn extract_keyboards(self) -> Option<T>;
@@ -65,6 +65,6 @@ where
 fn is_keyboard<T: DeviceInfo>(device: &T) -> bool {
     return device.supported_keys().map_or(false, |mut keys| {
         // TODO: Currently just patched this with call to evdev, but need to wrap key types in this project's Key struct
-        keys.any(|key| key == evdev::Key::KEY_ENTER)
+        keys.any(|key| key == Key::KEY_ENTER)
     });
 }
