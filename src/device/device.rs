@@ -1,5 +1,5 @@
-use super::key::Key;
 use crate::errors::{DeviceError, VirtualDeviceCreationError};
+use crate::key::Key;
 use evdev::{AttributeSet, AttributeSetRef};
 use log;
 use std::{io, path::PathBuf};

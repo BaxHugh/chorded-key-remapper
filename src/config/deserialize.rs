@@ -4,5 +4,5 @@
 use std::fmt::Debug;
 use std::str::FromStr;
 
-use crate::device::Key;
 use crate::errors::ConfigError;
+use crate::Key;

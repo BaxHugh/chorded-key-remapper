@@ -101,7 +101,7 @@ fn format_many_device_names(names: &Vec<String>) -> String {
 #[cfg(test)]
 mod test_DevicesConfig_extract_devices_to_remap {
     use super::*;
-    use crate::device::Key;
+    use crate::Key;
     extern crate testing_logger;
 
     #[derive(Clone, Eq, PartialEq, Debug)]

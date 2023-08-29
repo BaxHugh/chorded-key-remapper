@@ -1,4 +1,4 @@
-use crate::device::Key;
+use crate::Key;
 use serde_derive::Deserialize;
 
 #[derive(Deserialize, Debug)]
