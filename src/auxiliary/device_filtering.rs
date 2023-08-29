@@ -1,4 +1,5 @@
-use crate::device::{DeviceInfo, Key};
+use crate::device::DeviceInfo;
+use crate::Key;
 
 pub trait FilterableDevices<T> {
     fn extract_keyboards(self) -> Option<T>;
