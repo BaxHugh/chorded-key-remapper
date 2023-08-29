@@ -110,12 +110,49 @@ mod test_DevicesConfig_extract_devices_to_remap {
         is_keyboard: bool,
     }
 
-    impl DeviceInfo for MockDevice {
-        fn supported_keys(&self) -> Result<Box<dyn Iterator<Item = Key> + '_>, DeviceError> {
-            if self.is_keyboard {
-                Ok(Box::new(vec![Key(evdev::Key::KEY_ENTER)].into_iter()))
+    impl MockDevice {
+        pub fn new(name: &str, is_keyboard: bool) -> MockDevice {
+            MockDevice {
+                name: Some(name.to_owned()),
+                is_keyboard,
+            }
+        }
+    }
+
+    struct VecIterator<T> {
+        vec: Vec<T>,
+        index: usize,
+    }
+
+    impl<T> VecIterator<T> {
+        pub fn new(vec: Vec<T>) -> VecIterator<T> {
+            VecIterator { vec, index: 0 }
+        }
+    }
+
+    impl<T> Iterator for VecIterator<T>
+    where
+        T: Clone,
+    {
+        type Item = T;
+        fn next(&mut self) -> Option<Self::Item> {
+            if self.index < self.vec.len() {
+                let item = self.vec[self.index].clone();
+                self.index += 1;
+                Some(item)
             } else {
-                Ok(Box::new(vec![].into_iter()))
+                None
+            }
+        }
+    }
+
+    impl DeviceInfo for MockDevice {
+        type Iter<'a> = VecIterator<Key>;
+        fn supported_keys(&self) -> Result<Self::Iter<'_>, DeviceError> {
+            if self.is_keyboard {
+                Ok(VecIterator::new(vec![Key::KEY_ENTER]))
+            } else {
+                Ok(VecIterator::new(vec![]))
             }
         }
 

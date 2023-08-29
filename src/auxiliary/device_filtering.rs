@@ -65,6 +65,6 @@ where
 fn is_keyboard<T: DeviceInfo>(device: &T) -> bool {
     return device.supported_keys().map_or(false, |mut keys| {
         // TODO: Currently just patched this with call to evdev, but need to wrap key types in this project's Key struct
-        keys.any(|key| key.0 == evdev::Key::KEY_ENTER)
+        keys.any(|key| key == evdev::Key::KEY_ENTER)
     });
 }
