@@ -16,6 +16,12 @@ pub trait DeviceInfo: ToString {
         Self: 'a;
     fn supported_keys<'a>(&'a self) -> Result<Self::Iter<'a>, DeviceError>;
     fn name(&self) -> Option<&str>;
+    fn max_key_code(&self) -> Option<u16> {
+        return match self.supported_keys() {
+            Ok(keys) => Some(keys.max()?.code()),
+            Err(_) => None,
+        };
+    }
 }
 
 pub trait VirtualDeviceInfo {
