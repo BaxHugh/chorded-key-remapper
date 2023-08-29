@@ -1,16 +1,20 @@
 use super::key::Key;
 use crate::errors::{DeviceError, VirtualDeviceCreationError};
+use evdev::{AttributeSet, AttributeSetRef};
 use log;
 use std::{io, path::PathBuf};
 // Structs which wrap structs provided by another device interface library, currently evdev, but
 // this library could be changed if compiling for a different OS, or if another library is later preferred.
 
-pub struct Device(evdev::Device);
+pub struct Device(pub evdev::Device);
 
-pub struct VirtualDevice(evdev::uinput::VirtualDevice);
+pub struct VirtualDevice(pub evdev::uinput::VirtualDevice);
 
 pub trait DeviceInfo: ToString {
-    fn supported_keys(&self) -> Result<Box<dyn Iterator<Item = Key> + '_>, DeviceError>;
+    type Iter<'a>: Iterator<Item = Key>
+    where
+        Self: 'a;
+    fn supported_keys<'a>(&'a self) -> Result<Self::Iter<'a>, DeviceError>;
     fn name(&self) -> Option<&str>;
 }
 
@@ -37,10 +41,7 @@ impl VirtualDevice {
         name: &str,
         template_device: &mut T,
     ) -> Result<VirtualDevice, VirtualDeviceCreationError> {
-        let mut keys = evdev::AttributeSet::<evdev::Key>::new();
-        for key in template_device.supported_keys()? {
-            keys.insert(key.0);
-        }
+        let keys = AttributeSet::<evdev::Key>::from_iter(template_device.supported_keys()?);
 
         let mut device = VirtualDevice(
             evdev::uinput::VirtualDeviceBuilder::new()?
@@ -70,16 +71,17 @@ impl ToString for Device {
 }
 
 impl DeviceInfo for Device {
-    fn supported_keys(&self) -> Result<Box<dyn Iterator<Item = Key> + '_>, DeviceError> {
-        return Ok(Box::new(match self.0.supported_keys() {
-            Some(evdev_keys) => evdev_keys.iter().into_iter().map(|k| Key(k)),
+    type Iter<'a> = Box<dyn Iterator<Item = Key> + 'a>;
+    fn supported_keys<'a>(&'a self) -> Result<Self::Iter<'a>, DeviceError> {
+        return Ok(match self.0.supported_keys() {
+            Some(evdev_keys) => Box::new(evdev_keys.iter()),
             None => {
                 return Err(DeviceError::SupportedKeysEmpty(format!(
                     "No supported keys found on template device: {:?}",
                     self.name()
                 )))
             }
-        }));
+        });
     }
 
     fn name(&self) -> Option<&str> {
